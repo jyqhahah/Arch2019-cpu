@@ -217,7 +217,8 @@ ex ex0(
   .shamt_i(ex_shamt_i),
   .wd_o(ex_wd_o),
   .wreg_o(ex_wreg_o),
-  .wdata_o(ex_wdata_o),
+  //.wdata_o(ex_wdata_o),
+  .data_out(ex_wdata_o),
   .opcode_o(ex_opcode_o),
   .op_o(ex_op_o),
   .mem_addr_o(ex_mem_addr_o)

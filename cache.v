@@ -47,6 +47,14 @@ module cache(
     assign rtag_i = read_addr_i[16:10];
     assign windex_i = write_addr_i[9:2];
     assign wtag_i = write_addr_i[16:10];
+    
+    wire rvaild;
+    wire[6:0] rtag;
+    wire[`RegBus] rinst;
+    
+    assign rvalid = cache_valid[rindex_i];
+    assign rtag = cache_tag[rindex_i];
+    assign rinst = cache_data[rindex_i];
 
     integer i;
     always @ (posedge clk) begin
@@ -68,9 +76,9 @@ module cache(
       end else if(we_i == `True_v && rindex_i == windex_i) begin
         cache_hit_o <= `True_v;
         cache_inst_o <= write_inst_i;
-      end else if(cache_valid[rindex_i] == `True_v && rindex_i == windex_i) begin
+      end else if(rvalid == `True_v && rtag_i == rtag) begin
         cache_hit_o <= `True_v;
-        cache_inst_o <= cache_data[rindex_i];
+        cache_inst_o <= rinst;
       end else begin
         cache_hit_o <= `False_v;
         cache_inst_o <= `ZeroWord;
