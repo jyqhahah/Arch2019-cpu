@@ -36,8 +36,7 @@ module ex(
 
     output reg[`RegAddrBus] wd_o,
     output reg wreg_o,
-    //output reg[`RegBus] wdata_o,
-    output reg[`RegBus] data_out,
+    output reg[`RegBus] wdata_o,
     output reg[`OptcodeBus] opcode_o,
     output reg[`OpBus] op_o,
     output reg[`InstAddrBus] mem_addr_o
@@ -101,10 +100,10 @@ module ex(
         endcase
       end
     end
-  /*
+  
   always @ (*) begin
     
     wdata_o <= data_out;
     
-  end*/
+  end
 endmodule

@@ -34,9 +34,9 @@ module cache(
     output reg[`InstBus] cache_inst_o
     );
 
-    reg[6:0] cache_tag[255:0];
-    reg[31:0] cache_data[255:0];
-    reg cache_valid[255:0];
+    (* ram_style = "registers" *) reg[6:0] cache_tag[255:0];
+    (* ram_style = "registers" *) reg[31:0] cache_data[255:0];
+    (* ram_style = "registers" *) reg cache_valid[255:0];
 
     wire[7:0] rindex_i; 
     wire[6:0] rtag_i;
@@ -47,25 +47,16 @@ module cache(
     assign rtag_i = read_addr_i[16:10];
     assign windex_i = write_addr_i[9:2];
     assign wtag_i = write_addr_i[16:10];
-    
-    wire rvaild;
-    wire[6:0] rtag;
-    wire[`RegBus] rinst;
-    
-    assign rvalid = cache_valid[rindex_i];
-    assign rtag = cache_tag[rindex_i];
-    assign rinst = cache_data[rindex_i];
 
     integer i;
     always @ (posedge clk) begin
       if(rst == `RstEnable) begin
-        for (i=0; i<256;i=i+1) begin
+        for (i=0; i<256;i=i+1) 
           cache_valid[i] <= 1'b0; 
-        end
       end else if(rst == `RstDisable && we_i == `True_v) begin
-        cache_tag[windex_i] <= `True_v;
+        cache_valid[windex_i] <= `True_v;
         cache_data[windex_i] <= write_inst_i;
-        cache_valid[windex_i] <= write_addr_i;
+        cache_tag[windex_i] <= write_addr_i[16:10];
       end
     end
 
@@ -76,9 +67,9 @@ module cache(
       end else if(we_i == `True_v && rindex_i == windex_i) begin
         cache_hit_o <= `True_v;
         cache_inst_o <= write_inst_i;
-      end else if(rvalid == `True_v && rtag_i == rtag) begin
+      end else if(cache_valid[rindex_i] == `True_v && cache_tag[rindex_i] == rtag_i) begin
         cache_hit_o <= `True_v;
-        cache_inst_o <= rinst;
+        cache_inst_o <= cache_data[rindex_i];
       end else begin
         cache_hit_o <= `False_v;
         cache_inst_o <= `ZeroWord;
